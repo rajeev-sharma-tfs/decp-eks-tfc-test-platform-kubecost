@@ -7,7 +7,7 @@ pricingCsv:
   enabled: false
   location:
     provider: "AWS"
-    region: "us-east-1" 
+    region: "us-east-1"
     URI: s3://kc-csv-test/pricing_schema.csv # a valid file URI
     csvAccessCredentials: pricing-schema-access-secret
 
@@ -33,7 +33,7 @@ networkPolicy:
 podSecurityPolicy:
   enabled: false
 
-imageVersion: prod-1.97.0
+imageVersion: prod-1.96.0
 kubecostFrontend:
   image: public.ecr.aws/kubecost/frontend
   imagePullPolicy: Always
@@ -44,7 +44,7 @@ kubecostFrontend:
     #limits:
     #  cpu: "100m"
     #  memory: "256Mi"
-  
+
 kubecostModel:
   image: public.ecr.aws/kubecost/cost-model
   imagePullPolicy: Always
@@ -81,18 +81,14 @@ persistentVolume:
   # existingClaim: kubecost-cost-analyzer # a claim in the same namespace as kubecost
 
 ingress:
-  enabled: false
-  # className: nginx
+  enabled: true
+  className: nginx-private
   annotations:
-    kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # kubernetes.io/ingress.class: nginx-private
+  # kubernetes.io/tls-acme: "true"
   paths: ["/"] # There's no need to route specifically to the pods-- we have an nginx deployed that handles routing
   hosts:
-    - cost-analyzer.local
-  tls: []
-  #  - secretName: cost-analyzer-tls
-  #    hosts:
-  #      - cost-analyzer.local
+    - cost-decp.tfctest.thermofisher.net
 
 service:
   type: ClusterIP
@@ -164,18 +160,19 @@ prometheus:
         # - name: prometheus-alerts
         #   mountPath: /etc/alerts.d
         #   subPath: ""
-        #   configMap: prometheus-alerts
-        #   readOnly: true
+      #   configMap: prometheus-alerts
+      #   readOnly: true
       ## configmap-reload resource requests and limits
       ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
       ##
       resources: {}
-     
+
   kube-state-metrics:
-    disabled: false
+    disabled: true
   nodeExporter:
     enabled: false
 
 
 reporting:
   productAnalytics: false
+
